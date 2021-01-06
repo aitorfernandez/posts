@@ -1,0 +1,9 @@
+*.pid
+*.swo
+*.swp
+*.tmp
+.DS_Store
+.tags
+
+# ideas, notes, etc.
+kko.txt
