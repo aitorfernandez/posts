@@ -1,4 +1,4 @@
-# Rust enums
+# Rust Enums
 
 Enumerations, or [enums](https://en.wikipedia.org/wiki/Enumerated_type) for short, are a set of predefined constants in a programming language. Each constant represents a specific value, and only one of these values can be active at any given time. A common use case of enumerations is to define a set of possible states, such as HTTP status codes.
 
