@@ -2,7 +2,7 @@
 
 Rust doesn't utilize exceptions like try/catch or begin/rescue commonly found in other languages. Instead, the outcome of functions or methods is returned as a [Result](https://doc.rust-lang.org/std/result/) enum type, indicating either successful execution (Ok) or an error (Err) along with more details.
 
-```rs
+```rust
 enum Result<T, E> {
     Ok(T),
     Err(E),
@@ -24,7 +24,7 @@ pub struct ApiError {
 
 And when we want to raise an API error, we can return it easily.
 
-```rs
+```rust
 fn upload_file() -> Result<(), ApiError> {
     // ...
 
@@ -37,7 +37,7 @@ fn upload_file() -> Result<(), ApiError> {
 
 To have more control, we can implement a [constructor](https://en.wikipedia.org/wiki/Constructor_%28object-oriented_programming%29) function to assist in returning the errors.
 
-```rs
+```rust
 impl ApiError {
     pub fn new(code: u16, message: String) -> Self {
         Self { code, message }
@@ -55,7 +55,7 @@ This works well but there are a few guidelines to follow to make our custom erro
 
 Firstly, we must ensure that the errors are printable by adding the [Debug](https://doc.rust-lang.org/std/fmt/trait.Debug.html) directive to the custom error structure.
 
-```rs
+```rust
 #[derive(Debug)]
 pub struct ApiError {
     // [...]
@@ -64,7 +64,7 @@ pub struct ApiError {
 
 Secondly, we must manually implement the [Display](https://doc.rust-lang.org/std/fmt/trait.Display.html) trait to enable error printing and use the [write!](https://doc.rust-lang.org/std/macro.write.html) macro for formatting the arguments we want.
 
-```rs
+```rust
 impl std::fmt::Display for ApiError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         write!(f, "API error: {}, {}", self.code, self.message)
@@ -92,19 +92,19 @@ impl std::error::Error for ApiError {
 
 We can simplify things by using a type alias when multiple functions or methods return the `ApiError`.
 
-```rs
+```rust
 type ApiResult<T> = Result<T, ApiError>;
 ```
 
 Now, instead of indicating both types in the Result enum `Result<(), ApiError>`, as we did previously, we can simplify it further by using the ApiResult type alias.
 
-```rs
+```rust
 fn upload_file(...) -> ApiResult<()> {
     // ...
 }
 ```
 
-The `ApiError` works well but in a complex system many things can go wrong. For example, in another layer of the service, we may have a database that returns its custom errors.
+The `ApiError` works well but in a complex system, many things can go wrong. For example, in another layer of the service, we may have a database that returns its custom errors.
 
 ```rs
 #[derive(Debug)]
@@ -122,9 +122,9 @@ impl std::fmt::Display for DatabaseError {
 impl std::error::Error for DatabaseError {}
 ```
 
-Transitioning from one error to another causes the Rust compiler to produce an error. The following code would result in a error.
+Transitioning from one error to another causes the Rust compiler to produce an error. The following code would result in an error.
 
-```rs
+```rust
 fn find_in_database(...) -> Result<(), DatabaseError> {
     // ...
 
@@ -140,9 +140,9 @@ fn find_file(...) -> ApiResult<()> {
 
 Before dealing with the compiler error, let's see the `?` operator used in the previous code. This operator provides an easier way to handle errors without repeatedly using [match](https://doc.rust-lang.org/std/keyword.match.html) statements. By using the `?` operator, we can either receive the return value or immediately return the error terminating the function flow.
 
-The code from before without `?` operator can be expressed as:
+The previous code without the`?` operator can be expressed as:
 
-```rs
+```rust
 fn find_file(...) -> ApiResult<()> {
     let file = mathc find_in_database() {
         Ok(result) => result,
@@ -169,7 +169,7 @@ error[E0277]: `?` couldn't convert the error to `ApiError`
 
 Following the compiler's suggestions, we can implement the [From](https://doc.rust-lang.org/std/convert/trait.From.html) trait to convert values from one type to another.
 
-```rs
+```rust
 impl From<DatabaseError> for ApiError {
     fn from(err: DatabaseError) -> Self {
         match err {
@@ -182,7 +182,7 @@ impl From<DatabaseError> for ApiError {
 
 And now the error can be propagated without encountering any issues.
 
-```rs
+```rust
 fn find_in_database(...) -> Result<(), DatabaseError> {
     // ...
 

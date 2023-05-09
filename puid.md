@@ -11,7 +11,7 @@ With that in mind, selecting a name for the crate was a no-brainer. I chose "pui
 1. An 8-character prefix is chosen by the user.
 
 
-```rs
+```rust
 impl<'a> PuidBuilder<'a> {
     // [...]
 
@@ -32,10 +32,10 @@ fn validate(pref: &str) -> bool {
 }
 ```
 
-1. An underscore `_` between the prefix and the id characters.
+2. An underscore `_` between the prefix and the id characters.
 
 
-```rs
+```rust
 impl<'a> PuidBuilder<'a> {
     // [...]
 
@@ -50,10 +50,10 @@ impl<'a> PuidBuilder<'a> {
 }
 ```
 
-1. The Unix timestamp.
+3. The Unix timestamp.
 
 
-```rs
+```rust
 fn time() -> u128 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -62,10 +62,10 @@ fn time() -> u128 {
 }
 ```
 
-1. An incrementing counter that starts again at a limit of 255.
+4. An incrementing counter that starts again at a limit of 255.
 
 
-```rs
+```rust
 fn counter() -> u8 {
     COUNTER
         .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |i| match i {
@@ -76,17 +76,17 @@ fn counter() -> u8 {
 }
 ```
 
-1. The process identifier.
+5. The process identifier.
 
 
-```rs
+```rust
 std::process::id() as u128
 ```
 
-1. An alphanumeric sequence using Rand as a dependency.
+6. An alphanumeric sequence using Rand as a dependency.
 
 
-```rs
+```rust
 fn rnd_string(elements: usize) -> String {
     thread_rng()
         .sample_iter(&Alphanumeric)
@@ -98,7 +98,7 @@ fn rnd_string(elements: usize) -> String {
 
 Parts 3 and 5, the Unix timestamp and the process identifier. These values are converted to [Base36](https://en.wikipedia.org/wiki/Base36) for compact representation. [Base36](https://en.wikipedia.org/wiki/Base36) is a compact and efficient way of representing numerical values using a combination of the digits 0-9 and the letters A-Z. This makes it a good choice for situations where space is limited.
 
-```rs
+```rust
 fn to_base36(mut v: u128) -> String {
     let mut chars = vec![];
     while v > 0 {
@@ -113,13 +113,13 @@ The [PUID](https://crates.io/crates/puid) crate implements a builder pattern, pr
 
 An id with a prefix `foo_` and default entropy of 12 random characters at the end.
 
-```rs
+```rust
 let id = Puid::builder().prefix("foo")?.build()?;
 ```
 
 An id with a prefix `bar_` and custom entropy of 24 random characters at the end.
 
-```rs
+```rust
 let id = Puid::builder().prefix("bar")?.entropy(24).build()?;
 ```
 
