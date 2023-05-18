@@ -1,4 +1,4 @@
-# Dungeons, Trees and Grids.
+# Dungeons, Trees and Grids
 
 I've been playing around trying to generate a map for a kind of Zelda-Diablo game mechanics.
 
